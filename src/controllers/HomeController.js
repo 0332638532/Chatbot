@@ -1,5 +1,5 @@
 import request from "request";
-import chatbotService from "../services/chatbotService";
+import chatbotService from "../services/chatbotService.js";
 require('dotenv').config();
 
 const page_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
