@@ -10,6 +10,14 @@ let initWebRoutes = (app) =>{
 
     app.post('/webhook', hometroller.postWebhook);
     app.get('/webhook', hometroller.getWebhook);
+
+    router.post('/setup-persistent-menu', hometroller.setupPersistentMenu);
+
+    app.get('/booking', hometroller.handleBooking);
+    app.post('/set-booking', hometroller.handlePostBooking);
+
+    app.get('/advise', hometroller.handleAdvise);
+    app.post('/set-advise', hometroller.handlePostAdvise);
     return app.use('/', router);
 };
 

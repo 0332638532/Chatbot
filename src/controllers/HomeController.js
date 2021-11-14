@@ -2,7 +2,7 @@ import request from "request";
 import chatbotService from "../services/chatbotService";
 require('dotenv').config();
 
-const page_ACCESS_TOKEN=process.env.PAGE_ACCESS_TOKEN;
+const page_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 
 let getHomePage = (req, res) =>{
     return res.render('homepage.ejs');
@@ -72,8 +72,17 @@ let getWebhook= (req, res) =>{
 };
 
 // Handles messages events
-function handleMessage(sender_psid, received_message) {
+async function handleMessage (sender_psid, received_message){
     let response;
+
+    if (received_message && received_message.quick_reply && received_message.quick_reply.payload) {
+      let payload = received_message.quick_reply.payload;
+      if (payload === "GET_STARTED") {
+          await chatbotService.handleGetStarted(sender_psid);
+      } 
+
+      return;
+  }
   
     // Checks if the message contains text
     if (received_message.text) {    
@@ -132,9 +141,44 @@ async function handlePostback(sender_psid, received_postback) {
       response = { "text": "Oops, try sending another image." }
       // code block
       break;
+
+    case 'RESTARTED_BOT':  
     case 'GET_STARTED':
       await chatbotService.handleGetStarted(sender_psid);
       break;
+
+    case 'LOOK_BOOKING':
+      await chatbotService.handleSendBooking(sender_psid);
+      break;
+
+    case 'MORNING':
+      await chatbotService.handleSendMoring(sender_psid);
+      break;
+    
+    case 'NOON':
+      await chatbotService.handleSendNoon(sender_psid);
+      break;
+
+    case 'RETURN':  
+      await chatbotService.handleBacktoBooking(sender_psid);
+      break;
+
+    case 'RETURN_NOON':  
+      await chatbotService.handleBacktoNoon(sender_psid);
+      break;
+    
+    case 'RETURN_MORNING':
+      await chatbotService.handleBacktoMorning(sender_psid);
+      break;
+      
+    case 'DETAIL':
+      await chatbotService.handleShowDetail(sender_psid);
+      break;
+      
+    case 'RETURN_TO_BEGIN':
+      await chatbotService.handleGetStarted(sender_psid);
+      break;  
+    
     default:
       response = { "text": `Tôi không biết trả lời như thế nào ${payload}` }
       // code block
@@ -195,9 +239,129 @@ let setupProfile = async(req, res) =>{
 
 };
 
+
+let setupPersistentMenu = async(req, res) =>{
+    //call profile facebook api
+    let request_body = {
+      "persistent_menu": [
+        {
+            "locale": "default",
+            "composer_input_disabled": false,
+            "call_to_actions": [
+                {
+                    "type": "web_url",
+                    "title": "Trang Facebook của ISOFCARE",
+                    "url": "https://www.facebook.com/B%E1%BB%87nh-vi%E1%BB%87n-Isofhcare-108849608268818/",
+                    "webview_height_ratio": "full"
+                },
+                {
+                    "type": "postback",
+                    "title": "Khởi động lại bot",
+                    "payload": "RESTARTED_BOT"
+                }
+            ]
+        }
+    ]
+    }
+  // template string
+    // Send the HTTP request to the Messenger Platform
+    await request({
+      "uri": `https://graph.facebook.com/v12.0/me/messenger_profile?access_token=${page_ACCESS_TOKEN}`,
+      "qs": { "access_token": page_ACCESS_TOKEN },
+      "method": "POST",
+      "json": request_body
+    }, (err, res, body) => {
+      console.log(body)
+      if (!err) {
+        console.log('Setup persistent menu succeeds')
+      } else {
+        console.error("Unable to send message:" + err);
+      }
+    }); 
+    return res.send("Setup persistent menu succeeds");
+  
+
+}
+
+let handleBooking = (req, res) =>{
+  return res.render('booking.ejs');
+}
+
+let handlePostBooking = async (req, res) =>{
+  try {
+    let customerName = "";
+    if (req.body.customerName === "") {
+        customerName = "Để trống";
+    } else customerName = req.body.customerName;
+
+    // I demo response with sample text
+    // you can check database for customer order's status
+
+    let response1 = {
+        "text": `---Thông tin khách hàng đặt khám---
+        \nHọ và tên: ${customerName}
+        \nĐịa chỉ Email: ${body.email}
+        \nSố điện thoại: ${body.phoneNumber}
+        `
+    };
+
+    await chatbotService.callSendAPI(response1, body.psid);
+    
+    return res.status(200).json({
+        message: "ok"
+    });
+  } catch (e) {
+  console.log('Lỗi post booking',e);
+  return res.status(500).json({
+    message: "Server error"
+  });
+}
+}
+
+let handleAdvise = (req, res) =>{
+  return res.render('advise.ejs');
+}
+
+let handlePostAdvise = async (req, res) =>{
+  let body = req.body;
+  try {
+    let customerName = "";
+    if (body.customerName === "") {
+        customerName = "Để trống";
+    } else customerName = body.customerName;
+
+    // I demo response with sample text
+    // you can check database for customer order's status
+
+    let response1 = {
+        "text": `---Thông tin khách hàng đặt khám---
+        \nHọ và tên: ${customerName}
+        \nĐịa chỉ Email: ${body.email}
+        \nSố điện thoại: ${body.phoneNumber}
+        `
+    };
+
+    await chatbotService.callSendAPI(response1, body.psid);
+    
+    return res.status(200).json({
+        message: "ok"
+    });
+  } catch (e) {
+  console.log('Lỗi post advise',e);
+  return res.status(500).json({
+    message: "Server error"
+  });
+}
+}
+
 module.exports = {
     getHomePage: getHomePage,
     postWebhook: postWebhook,
     getWebhook: getWebhook,
-    setupProfile: setupProfile
+    setupProfile: setupProfile,
+    setupPersistentMenu: setupPersistentMenu,
+    handleBooking: handleBooking,
+    handlePostBooking: handlePostBooking,
+    handlePostAdvise: handlePostAdvise,
+    handleAdvise: handleAdvise 
 }
