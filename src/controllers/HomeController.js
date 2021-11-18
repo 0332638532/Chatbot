@@ -77,10 +77,15 @@ async function handleMessage (sender_psid, received_message){
 
     if (received_message && received_message.quick_reply && received_message.quick_reply.payload) {
       let payload = received_message.quick_reply.payload;
-      if (payload === "GET_STARTED") {
-          await chatbotService.handleGetStarted(sender_psid);
-      } 
-
+      if (payload === "LOOK_BOOKING") {
+        await chatbotService.handleSendBooking(sender_psid);
+    } 
+    else if(payload === "PAPER") {
+      await chatbotService.handlePaper(sender_psid);
+    }
+    else if(payload === "PRICE") {
+      await chatbotService.handlePrice(sender_psid);
+    }
       return;
   }
   
@@ -127,8 +132,8 @@ async function handleMessage (sender_psid, received_message){
 
 // Handles messaging_postbacks events
 async function handlePostback(sender_psid, received_postback) {
-  let response;
 
+  let response;
   // Get the payload for the postback
   let payload = received_postback.payload;
 
@@ -243,6 +248,7 @@ let setupProfile = async(req, res) =>{
 let setupPersistentMenu = async(req, res) =>{
     //call profile facebook api
     let request_body = {
+      "psid": "<PSID>",
       "persistent_menu": [
         {
             "locale": "default",
@@ -266,7 +272,7 @@ let setupPersistentMenu = async(req, res) =>{
   // template string
     // Send the HTTP request to the Messenger Platform
     await request({
-      "uri": `https://graph.facebook.com/v12.0/me/messenger_profile?access_token=${page_ACCESS_TOKEN}`,
+      "uri": `https://graph.facebook.com/v12.0/me/custom_user_settings?access_token=${page_ACCESS_TOKEN}`,
       "qs": { "access_token": page_ACCESS_TOKEN },
       "method": "POST",
       "json": request_body
@@ -300,12 +306,12 @@ let handlePostBooking = async (req, res) =>{
     let response1 = {
         "text": `---Thông tin khách hàng đặt khám---
         \nHọ và tên: ${customerName}
-        \nĐịa chỉ Email: ${body.email}
-        \nSố điện thoại: ${body.phoneNumber}
+        \nĐịa chỉ Email: ${req.body.email}
+        \nSố điện thoại: ${req.body.phoneNumber}
         `
     };
 
-    await chatbotService.callSendAPI(response1, body.psid);
+    await chatbotService.callSendAPI(response1, req.body.psid);
     
     return res.status(200).json({
         message: "ok"
