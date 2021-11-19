@@ -11,7 +11,7 @@ const IMAGE_DETAIL = 'http://linconlaw.vn/wp-content/uploads/2019/04/IMG_0937-e1
 const IMAGE_MORING = 'http://image.vietnamnews.vn/uploadvnnews/Article/2021/8/2/167184_hoanmy.jpg';
 const IMAGE_EVENING = 'https://assets.thehansindia.com/hansindia-bucket/7481_Doctors.jpg';
 const IMAGE_DETAIL_WEB = 'https://www.halton.com/wp-content/uploads/2020/05/Patient_HiRes_01-1366x768.jpg';
-var IMAGE='/images/picture.png'
+
 
 let callSendAPI = async (response, sender_psid) => {
   // Construct the message body
@@ -97,17 +97,17 @@ let SendTypingOn = (sender_psid) =>{
             "quick_replies": [
                 {
                     "content_type": "text",
-                    "title": "Đặt khám",
+                    "title": `Lịch khám`,
                     "payload": "LOOK_BOOKING",
                 },
                 {
                     "content_type": "text",
-                    "title": "Giấy tờ",
+                    "title": `Giấy tờ`,
                     "payload": "PAPER",
                 },
                 {
                     "content_type": "text",
-                    "title": "Giá",
+                    "title": `Hình thức thanh toán`,
                     "payload": "PRICE",
                 },
             ]
@@ -167,8 +167,7 @@ let handlePrice = (sender_psid) =>{
   return new Promise(async (resolve, reject) =>{
     try{
         let response2 = {
-          "text": `Bệnh nhân có bảo hiểm y tế và có giấy chuyển đúng tuyến đều được hưởng bảo hiểm y tế như quy định.
-           \nCó 2 mức phí khám:
+          "text": `Quý vị có thể thanh toán bằng tiền mặt và/hoặc thẻ tín dụng (Master card/Visa card) và/hoặc thẻ ATM của các ngân hàng trong nước.
            `
         };
         let response3={
@@ -176,7 +175,10 @@ let handlePrice = (sender_psid) =>{
             "type":"template",
             "payload":{
               "template_type":"button",
-              "image_url": IMAGE,
+              "text": `Hi vọng các thông tin này rất hữu ích cho các bạn
+                      \nQuý vị có thể liên hệ chúng tôi qua 
+                      \nSố điện thoại (84)-0968679272 hoặc 0243 9420055
+                      \nTrân trọng cám ơn!`,
               "buttons":[
                 { 
                   "type": "postback",
@@ -216,7 +218,7 @@ let getBookingTemplate = () =>{
         "template_type": "generic",
         "elements": [{
           "title": "Lịch khám của chúng tôi.",
-          "subtitle": `Trang web mang đến cho bạn lịch khám cho buổi sáng lẫn buổi chiều để các bạn chọn`,
+          "subtitle": `Trang web mang đến cho bạn lịch khám cho buổi sáng lẫn buổi chiều`,
           "image_url": IMAGE_LOOK_BOOKING,
           "buttons": [
             {
@@ -250,8 +252,8 @@ let getMoringTemplate = () =>{
           "image_url": IMAGE_MORING,
         },
         {
-          "title": "dsds",
-          "subtitle": "DAADASAS",
+          "title": "Đặt khám",
+          "subtitle": "Bạn có cần đặt khám không?",
           "image_url": IMAGE_BOOKING,
           "buttons": [
             {
@@ -305,8 +307,8 @@ let getNoonTemplate = () =>{
           "image_url": IMAGE_EVENING,
         },
         {
-          "title": "DSADS",
-          "subtitle": "DASDAS",
+          "title": "Đặt khám",
+          "subtitle": "Bạn có cần đặt khám không?",
           "image_url": IMAGE_BOOKING,
           "buttons": [
             

@@ -86,6 +86,9 @@ async function handleMessage (sender_psid, received_message){
     else if(payload === "PRICE") {
       await chatbotService.handlePrice(sender_psid);
     }
+    else if(payload === "RETURN_TO_BEGIN") {
+      await chatbotService.handleGetStarted(sender_psid);
+    }
       return;
   }
   
