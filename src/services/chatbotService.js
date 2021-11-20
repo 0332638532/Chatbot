@@ -252,15 +252,10 @@ let getMoringTemplate = () =>{
           "image_url": IMAGE_MORING,
         },
         {
-          "title": "Đặt khám",
-          "subtitle": "Bạn có cần đặt khám không?",
+          "title": "Lựa chọn",
+          "subtitle": `Bạn có thể quay về hoặc xem lịch khám buổi chiều`,
           "image_url": IMAGE_BOOKING,
           "buttons": [
-            {
-              "type": "postback",
-              "title": "Đặt khám",
-              "payload": "BOOKING",
-            },
             
             {
               "type": "postback",
@@ -307,8 +302,8 @@ let getNoonTemplate = () =>{
           "image_url": IMAGE_EVENING,
         },
         {
-          "title": "Đặt khám",
-          "subtitle": "Bạn có cần đặt khám không?",
+          "title": "Lựa chọn",
+          "subtitle": `Bạn có thể quay về hoặc xem lịch khám buổi sáng`,
           "image_url": IMAGE_BOOKING,
           "buttons": [
             
